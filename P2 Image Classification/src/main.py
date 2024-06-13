@@ -15,3 +15,5 @@ test_set=torchvision.datasets.CIFAR10(download=True, root='../data', train=False
 train_loader=dataloader(train_set, batch_size=BATCH_SIZE, shuffle=True)
 test_loader=dataloader(test_set, batch_size=BATCH_SIZE, )
 
+
+
