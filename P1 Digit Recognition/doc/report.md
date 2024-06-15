@@ -1,5 +1,9 @@
 # P1 Digit Recognition
 
+**Name**: 赵子涵
+**Major**: Computer Science
+**Student ID**: 2023E8013282148
+
 ### Dataset
 
 The MNIST consist 60000 28*28 grayscale images for train set, and 10000 for test set. The images are all handwritten digits, and lable ranges from 0 to 9.
