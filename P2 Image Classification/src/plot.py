@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import torch
 
 def plot_curves(train_loss, test_acc, epoch, root):
 	x_axis=np.linspace(1, epoch, epoch)
@@ -16,3 +17,12 @@ def plot_curves(train_loss, test_acc, epoch, root):
 	plt.ylabel('accuracy')
 	plt.savefig(root+'test_accuracy.png')
 
+def plot_checkpoint():
+	cp=torch.load('../checkpoint/vit.pth')
+	epoch=cp['current_epoch']
+	train_loss=cp['train_loss']
+	test_accuracy=cp['test_accuracy']
+	plot_curves(train_loss, test_accuracy, epoch, root='../doc/pic/')
+
+if __name__=='__main__':
+	plot_checkpoint()
