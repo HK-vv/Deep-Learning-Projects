@@ -2,7 +2,7 @@ import torch
 from model import Poet
 import setting
 
-INIT_S=30
+INIT_S=40
 
 def predict(text, gen_len=100):
 	cp=torch.load('../checkpoint/poet.pth')
@@ -24,11 +24,10 @@ def predict(text, gen_len=100):
 	x=x[INIT_S+1:]
 	predict_words=[setting.ix2word[_] for _ in x.detach().numpy()]
 	predict_text=''.join(predict_words)
-	print(predict_text)
 	return predict_text
 
-input_text='下马饮君酒，问君何所之'
+input_text='秦时明月汉时关'
 print("input text: "+input_text)
-print("output text: ", end='')
-predict(['</s>']*INIT_S+['<START>']+list(input_text), gen_len=100)
+ptext=predict(['</s>']*INIT_S+['<START>']+list(input_text), gen_len=100)
+print("output text: "+ptext)
 
