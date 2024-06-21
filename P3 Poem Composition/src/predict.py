@@ -2,7 +2,7 @@ import torch
 from model import Poet
 import setting
 
-INIT_S=40
+INIT_S=33
 
 def predict(text, gen_len=100):
 	cp=torch.load('../checkpoint/poet.pth')
