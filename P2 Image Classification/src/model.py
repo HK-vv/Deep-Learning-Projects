@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 from einops.layers.torch import Rearrange
-from einops import repeat
+from einops import repeat, rearrange
 
 class Attention(nn.Module):
 	def __init__(self, dim, heads, head_dim, dropout) -> None:
@@ -9,10 +9,11 @@ class Attention(nn.Module):
 		self.dim=dim
 		self.heads=heads
 		self.head_dim=head_dim
-		self.wq=nn.Linear(dim, head_dim, bias=False)
-		self.wk=nn.Linear(dim, head_dim, bias=False)
-		self.wv=nn.Linear(dim, head_dim, bias=False)
-		self.out=nn.Linear(head_dim, dim)
+		inner_dim=heads*head_dim
+		self.wq=nn.Linear(dim, inner_dim, bias=False)
+		self.wk=nn.Linear(dim, inner_dim, bias=False)
+		self.wv=nn.Linear(dim, inner_dim, bias=False)
+		self.out=nn.Linear(inner_dim, dim)
 		self.sm=nn.Softmax(dim=-1)
 		self.drop=nn.Dropout(dropout)
 		self.norm=nn.LayerNorm(dim)
@@ -21,13 +22,13 @@ class Attention(nn.Module):
 	def forward(self, x):
 		# input shape: (batch*heads*embed)
 		x=self.norm(x)
-		q=self.wq(x)
-		k=self.wk(x)
-		v=self.wv(x)
+		q, k, v=self.wq(x), self.wk(x), self.wv(x)
+		q, k, v=map(lambda t: rearrange(t, 'b n (h d) -> b h n d', h=self.heads), [q,k,v])
 		dots=torch.matmul(q, k.transpose(-1,-2))/self.head_dim**0.5
 		att=self.sm(dots)
 		att=self.drop(att)
 		out=torch.matmul(att, v)
+		out=rearrange(out, 'b h n d -> b n (h d)')
 		out=self.out(out)
 		return out
 	
@@ -52,7 +53,7 @@ class FeedForward(nn.Module):
 	
 
 class Transformer(nn.Module):
-	def __init__(self, depth, dim, heads, att_dim, dropout) -> None:
+	def __init__(self, depth, dim, heads, head_dim, dropout) -> None:
 		super().__init__()
 		self.N=depth
 		self.dim=dim
@@ -60,7 +61,7 @@ class Transformer(nn.Module):
 		self.norm=nn.LayerNorm(dim)
 		self.layers=nn.ModuleList([])
 		for _ in range(self.N):
-			self.layers.append(nn.ModuleList([Attention(dim, heads, att_dim, dropout=dropout), 
+			self.layers.append(nn.ModuleList([Attention(dim, heads, head_dim, dropout=dropout), 
 									 FeedForward(dim, dropout=dropout)]))
 		
 
@@ -116,19 +117,17 @@ class ImageEmbedding(nn.Module):
 
 
 class ViT(nn.Module):
-	def __init__(self, img_size, patch_size, 
-			  embed_dim, transformer_depth, att_dim, mlp_dim, out_dim, color=3, dropout=0.0):
+	def __init__(self, img_size, patch_size, embed_dim, transformer_depth, 
+			  heads, head_dim, mlp_dim, out_dim, color=3, dropout=0.0):
 		super().__init__()
-		self.heads=sum(torch.tensor(img_size)//torch.tensor(patch_size))
-		# TODO: embed image patches to vec
 		self.img_imbedding=ImageEmbedding(img_size=img_size,
 									patch_size=patch_size,
 									embed_dim=embed_dim,
 									color=color)
 		self.transformer=Transformer(depth=transformer_depth, 
 							   dim=embed_dim, 
-							   heads=self.heads,
-							   att_dim=att_dim,
+							   heads=heads,
+							   head_dim=head_dim,
 							   dropout=dropout)
 		self.mlp=MLP(embed_dim, mlp_dim, out_dim, dropout=dropout)
 		self.drop=nn.Dropout(dropout)

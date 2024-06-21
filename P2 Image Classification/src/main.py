@@ -7,8 +7,8 @@ from torchvision.transforms import v2
 from plot import plot_curves
 import time
 
-LOAD=False
-SAVE_FREQ=5
+LOAD=True
+SAVE_FREQ=2
 EPOCH=500
 BATCH_SIZE=500
 LR=0.001
@@ -48,8 +48,9 @@ print(f"we are using {device}")
 vit=ViT(img_size=(AUG_SIZE, AUG_SIZE),
 		patch_size=(16, 16),
 		embed_dim=300,
-		transformer_depth=12,
-		att_dim=300,
+		transformer_depth=10,
+		heads=10,
+		head_dim=30,
 		mlp_dim=1500,
 		out_dim=10,
 		dropout=0.1).to(device)
@@ -99,7 +100,7 @@ while epoch<EPOCH:
 	train_loss.append(mean_loss)
 	test_accuracy.append(acc)
 	elapse_time=time.time()-start_time
-	print(f"Epoch {epoch}: train_loss= {mean_loss}, test_accuracy= {acc}, using {elapse_time/60:.2f} minutes")
+	print(f"Epoch {epoch}: train_loss={mean_loss}, test_accuracy={acc}, using {elapse_time/60:.2f} minutes")
 	if epoch%SAVE_FREQ==0:
 		checkpoint={
 			'model_state': vit.state_dict(),
