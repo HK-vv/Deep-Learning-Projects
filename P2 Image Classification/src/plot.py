@@ -23,6 +23,7 @@ def plot_checkpoint():
 	train_loss=cp['train_loss']
 	test_accuracy=cp['test_accuracy']
 	plot_curves(train_loss, test_accuracy, epoch, root='../doc/pic/')
+	print(f"plotted, epoch={epoch}")
 
 if __name__=='__main__':
 	plot_checkpoint()

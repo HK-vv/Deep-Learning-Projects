@@ -4,15 +4,15 @@
 **Major**: Computer Science
 **Student ID**: 2023E8013282148
 
-### Task
+## Task
 
 In this project, we aim to generate text following the given one. Specifically, text are restricted to Chinese poem.
 
-### Dataset
+## Dataset
 
 We use the dataset from the course, which contains 57580 poetry in Tang dynasty.
 
-### Model Design
+## Model Design
 
 Considering the computing resource accessible currently, we design a simple model for this task.
 
@@ -22,7 +22,7 @@ The model consist three main part, which are, the embedding layer, the time seri
 
 The embedding layer could be implemented as a full connection layer. It tries to learn to embed the one dimension word into high dimension, which contains more information. The GRU is generally a time series model. Contrast to basic RNN, it utilizes the gate control method to settle the problem of vanishing gradient, hence long time memory is preserved. At the same time, it has a more simple structure then LSTM. The MLP layer is implemented by two stacked linear layer, which map the output of GRU to one hot coding as the result. We use cross entropy loss as criterion.
 
-### Result
+## Result
 
 The parameter we choose are as follows
 
@@ -44,8 +44,7 @@ Since there are no test set for this task, we wrote six prompts as the starting 
 
 ```
 input text: 湖光秋月两相和
-output text: 湖光秋月两相和，水馆风闲两相过。两岸红旗俱几许，风劲银澜难数过。新杯一醆杯前醉，夜夜明星
-月上无。
+output text: 湖光秋月两相和，水馆风闲两相过。两岸红旗俱几许，风劲银澜难数过。新杯一醆杯前醉，夜夜明星月上无。
 
 input text: 国破山河在
 output text: 国破山河在，天涯道路赊。家书辞日诏，兵气入秦家。壮气连云汉，狂风似水流。自怜长白首，皆恨白苹洲。不羨山僧便，宁辞东海鸥。还将谢戎策，归去臥云鸥。

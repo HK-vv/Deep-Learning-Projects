@@ -103,8 +103,9 @@ class ImageEmbedding(nn.Module):
 			Rearrange('b e h w -> b (h w) e'),
 			nn.LayerNorm(embed_dim)
 		)
-		self.cls_token=nn.Parameter(torch.randn(1, 1, embed_dim))
-		self.positions=nn.Parameter(torch.randn(1, self.heads+1, embed_dim))
+		self.cls_token=nn.Parameter(torch.zeros(1, 1, embed_dim))
+		self.positions=nn.Parameter(torch.arange(1.0, self.heads+2).view(1, -1, 1))
+		self.pos_emb=nn.Linear(1, embed_dim)
 
 	def forward(self, x):
 		x=self.embed_patch(x)
@@ -112,13 +113,13 @@ class ImageEmbedding(nn.Module):
 		b, _, _=x.shape
 		cls_tokens=repeat(self.cls_token, '1 1 d -> b 1 d', b=b)
 		x=torch.cat((cls_tokens, x), dim=1)
-		x=x+self.positions
+		x=x+self.pos_emb(self.positions)
 		return x
 
 
 class ViT(nn.Module):
 	def __init__(self, img_size, patch_size, embed_dim, transformer_depth, 
-			  heads, head_dim, mlp_dim, out_dim, color=3, dropout=0.0):
+			  heads, mlp_dim, out_dim, color=3, dropout=0.0):
 		super().__init__()
 		self.img_imbedding=ImageEmbedding(img_size=img_size,
 									patch_size=patch_size,
@@ -127,7 +128,7 @@ class ViT(nn.Module):
 		self.transformer=Transformer(depth=transformer_depth, 
 							   dim=embed_dim, 
 							   heads=heads,
-							   head_dim=head_dim,
+							   head_dim=embed_dim//heads,
 							   dropout=dropout)
 		self.mlp=MLP(embed_dim, mlp_dim, out_dim, dropout=dropout)
 		self.drop=nn.Dropout(dropout)
