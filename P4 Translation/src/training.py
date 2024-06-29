@@ -63,8 +63,8 @@ class BertTraining():
 					'test_bleu': self.test_bleu
 				}
 				torch.save(checkpoint, FileName.checkpoint)
-			print(f"Epoch {self.ep:} train_loss={epoch_train_loss:.2f}, valid_loss={epoch_valid_res[0]:.2f}, valid_bleu={epoch_valid_res[1]:.2f}"
-		 		+(f", test_bleu={epoch_test_bleu:.2f}" if t else "")+f". using {elapse_time/60:.2f} minutes")
+			print(f"Epoch {self.ep:} train_loss={epoch_train_loss:.3f}, valid_loss={epoch_valid_res[0]:.3f}, valid_bleu={epoch_valid_res[1]:.3f}"
+		 		+(f", test_bleu={epoch_test_bleu:.4f}" if t else "")+f". using {elapse_time/60:.1f} minutes")
 
 
 	def _train_epoch(self):

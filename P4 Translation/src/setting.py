@@ -3,7 +3,7 @@ from model import Bert
 SAVE_FREQ=2
 TEST_FREQ=5
 
-EPOCH=500
+EPOCH=200
 BATCH_SIZE=100
 LR=0.001
 PAD=0

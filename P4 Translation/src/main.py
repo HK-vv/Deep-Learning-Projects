@@ -25,7 +25,7 @@ print("model init")
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"we are using {device}")
 bert_training=BertTraining(bert, optimizer, loss_func, trainset, testset, device=device, load=True)
-# bert_training.train()
-for _ in range(5):
-	bert_training.demo()
+bert_training.train()
+# for _ in range(5):
+# 	bert_training.demo()
 

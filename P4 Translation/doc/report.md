@@ -6,7 +6,7 @@
 
 ## Task
 
-In this project, we are trying to design and train a transformer model for machine translation task.
+In this project, we are trying to design and train a transformer model for machine translation task. Specifically, we try to translate Chinese into English.
 
 ## Dataset
 
@@ -28,23 +28,38 @@ C'=softmax(QK+U)
 $$
 where the upper triangular entries of $U$ is $-\infty$, and the rest is $0$. This force the model to look at the previous value only.
 
-Still, one may argue that, since we adopt residual connection, will the data stream bypass masked attention layer and let the full information accessible to the next layer? The answer is no, here is a little trick in this. As we train the decoder, we do a 'shift-right' operation on the target sequence, which means we expect the model to predict the $k+1$ th token on the $k$ th position. Therefore, although the residual connection do bypass the masked attention layer, the $k$ th position still could only access the information in $[0,k]$, and try to predict the $k+1$ th token.
+Still, one may argue that, since we adopt residual connection, will the data stream bypass masked attention layer and let the full information accessible to the next layer? The answer is no, here is a little trick in this. As we train the decoder, we do a 'shift-right' operation on the target sequence, which means we expect the model to predict the $(k+1)$ th token on the $k$ th position. Therefore, although the residual connection do bypass the masked attention layer, the $k$ th position still could only access the information in $[0,k]$, and try to predict the $(k+1)$ th token.
 
 ## Metric
 
-We use BLEU score to evaluate our model. To avoid mistakes in implementing, we adopt the function by pytorch `torchtext.data.metrics.bleu_score()`.
+We use BLEU score to evaluate our model. To avoid any mistakes in implementing, we adopt the function by pytorch `torchtext.data.metrics.bleu_score()`.
 
 ## Result
 
 After processing the data and implementing the above model, we set the hyper-parameter as
 
 ```python
-xxx=xxx
+LR=0.001
+
+h_dim=256
+enc_n_heads=8
+dec_n_heads=8
+enc_ff_dim=256
+dec_ff_dim=256
+enc_n_layers=4
+dec_n_layers=4
+dropout=0.1
 ```
 
-The result is as follows
+The train and valid result is as follows
 
+<img src="C:\Users\vv\Desktop\Archives\Master\Deep Learning\Projects\P4 Translation\doc\pic\train_loss.png" alt="train_loss" style="zoom:50%;" />
 
+<img src="C:\Users\vv\Desktop\Archives\Master\Deep Learning\Projects\P4 Translation\doc\pic\valid_bleu.png" alt="valid_bleu" style="zoom:50%;" />
 
-After xx epochs, the BLEU score reached xxx.
+After about 150 epochs, the BLEU score on test set reached `0.146`.
+
+<img src="C:\Users\vv\Desktop\Archives\Master\Deep Learning\Projects\P4 Translation\doc\pic\test_bleu_fig.png" alt="test_bleu_fig" style="zoom:50%;" />
+
+Note: It is worth to clarify that as we *test* the model, we send the whole Chinese text into the encoder, and send the previous-generated $k$-length English text into the decoder to predict the $(k+1)$ th word in each iteration. Unlike what we do in *valid* process,  send the whole reference English text into the decoder to predict the right-shifted text, in which the model actually predict each word based on the previous ground truth.
 

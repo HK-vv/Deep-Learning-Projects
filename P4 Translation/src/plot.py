@@ -41,6 +41,7 @@ def plot_checkpoint():
 	valid_loss=cp['valid_loss']
 	valid_bleu=cp['valid_bleu']
 	test_bleu=cp['test_bleu']
+	print(f"max BLEU score on test set: {max(test_bleu)}")
 	plot_curves(train_loss, valid_loss, valid_bleu, test_bleu, epoch)
 	print(f"plotted, epoch={epoch}")
 
